@@ -83,6 +83,85 @@ namespace BinPacking2D
             }
             Desenho.Save(@"C:\Teste\DesenhoCarregamento.jpg");
         }
+        public SolucaoProblemaCarregamento2D MetodoSimulatedAnnealing(int[] SequenciaIncial, double TemperaturaInicial)
+        {
+            Random Aleatorio = new Random();
+            SolucaoProblemaCarregamento2D SolucaoMelhor = MetodoBaixoDireita(SequenciaIncial);
+            int[] SequenciaMelhor = new int[SequenciaIncial.GetLength(0)];
+            int[] SequenciaAtual = new int[SequenciaIncial.GetLength(0)];
+            for (int p = 0; p < SequenciaIncial.GetLength(0); p++)
+            {
+                SequenciaAtual[p] = SequenciaIncial[p];
+                SequenciaMelhor[p] = SequenciaIncial[p];
+            }
+            
+            SolucaoProblemaCarregamento2D SolucaoAtual = MetodoBaixoDireita(SequenciaIncial);
+            SolucaoProblemaCarregamento2D SolucaoCandidata;
+            double TemperaturaAtual = TemperaturaInicial;
+            while(TemperaturaAtual>0.1)
+            {
+                int[] SequenciaCandidata = MelhorSequenciaVizinha(SequenciaAtual);
+                SolucaoCandidata = MetodoBaixoDireita(SequenciaCandidata);
+                if (SolucaoCandidata.AreaUtilizada > SolucaoMelhor.AreaUtilizada)
+                {
+                    for (int p = 0; p < SequenciaAtual.GetLength(0); p++)
+                    {
+                        SequenciaMelhor[p] = SequenciaCandidata[p];
+                    }
+                    SolucaoMelhor = MetodoBaixoDireita(SequenciaMelhor);
+                }
+                if (SolucaoCandidata.AreaUtilizada > SolucaoAtual.AreaUtilizada)
+                {
+                    for (int p = 0; p < SequenciaAtual.GetLength(0); p++)
+                    {
+                        SequenciaAtual[p] = SequenciaCandidata[p];
+                    }
+                    SolucaoAtual = MetodoBaixoDireita(SequenciaAtual);
+                }
+                else
+                {
+                    int Delta = SolucaoCandidata.AreaUtilizada - SolucaoAtual.AreaUtilizada;
+                    if (Aleatorio.NextDouble() > Math.Exp(-Delta / TemperaturaAtual))
+                    {
+                        for (int p = 0; p < SequenciaAtual.GetLength(0); p++)
+                        {
+                            SequenciaAtual[p] = SequenciaCandidata[p];
+                        }
+                        SolucaoAtual = MetodoBaixoDireita(SequenciaAtual);
+                    }
+                }
+                TemperaturaAtual *= 0.9;
+            }
+            return SolucaoMelhor;
+        }
+        public int[] MelhorSequenciaVizinha(int[] Sequencia)
+        {
+            SolucaoProblemaCarregamento2D MelhorSolucaoVizinha = new SolucaoProblemaCarregamento2D();
+            int[] SequenciaVizinhaAtual = new int[Sequencia.GetLength(0)];
+            int[] SequenciaMelhorVizinha = new int[Sequencia.GetLength(0)];
+            for (int i = 0; i < Sequencia.GetLength(0); i++)
+            {
+                for (int j = i + 1; j < Sequencia.GetLength(0); j++)
+                {
+                    for (int p = 0; p < Sequencia.GetLength(0); p++)
+                    {
+                        SequenciaVizinhaAtual[p] = Sequencia[p];
+                    }
+                    SequenciaVizinhaAtual[i] = Sequencia[j];
+                    SequenciaVizinhaAtual[j] = Sequencia[i];
+                    SolucaoProblemaCarregamento2D SolucaoVizinhaAtual = MetodoBaixoDireita(SequenciaVizinhaAtual);
+                    if(SolucaoVizinhaAtual.AreaUtilizada>MelhorSolucaoVizinha.AreaUtilizada)
+                    {
+                        MelhorSolucaoVizinha = MetodoBaixoDireita(SequenciaVizinhaAtual);
+                        for (int p = 0; p < Sequencia.GetLength(0); p++)
+                        {
+                            SequenciaMelhorVizinha[p] = SequenciaVizinhaAtual[p];
+                        }
+                    }
+                }
+            }
+            return SequenciaMelhorVizinha;
+        }
         public SolucaoProblemaCarregamento2D MetodoBaixoDireita(int[] Sequencia)
         {
             SolucaoProblemaCarregamento2D SolucaoAnalisada = new SolucaoProblemaCarregamento2D();
@@ -91,24 +170,25 @@ namespace BinPacking2D
             SolucaoAnalisada.SolucaoObjetosCarregamento = new SolucaoObjetoCarregamento2D[Instancia.QuantidadeObjetosParaCarregar];
             for (int i = 0; i < Sequencia.GetLength(0); i++)
             {
-                int AlturaMaxima = EncontraMaiorValorAltura(0, Instancia.Objetos[i].Largura - 1, SolucaoAnalisada.Alturas);
-                int Deslocamento = EncontraMaiorDeslocamentoDireita(AlturaMaxima, Instancia.Objetos[i].Largura, SolucaoAnalisada.Alturas);
-                int NovaAltura = Instancia.Objetos[i].Altura + AlturaMaxima;
-                SolucaoAnalisada.SolucaoObjetosCarregamento[i] = new SolucaoObjetoCarregamento2D();
+                int IndiceObjetoAtual = Sequencia[i];
+                int AlturaMaxima = EncontraMaiorValorAltura(0, Instancia.Objetos[IndiceObjetoAtual].Largura - 1, SolucaoAnalisada.Alturas);
+                int Deslocamento = EncontraMaiorDeslocamentoDireita(AlturaMaxima, Instancia.Objetos[IndiceObjetoAtual].Largura, SolucaoAnalisada.Alturas);
+                int NovaAltura = Instancia.Objetos[IndiceObjetoAtual].Altura + AlturaMaxima;
+                SolucaoAnalisada.SolucaoObjetosCarregamento[IndiceObjetoAtual] = new SolucaoObjetoCarregamento2D();
                 if (NovaAltura <= Instancia.Caminhao.Altura)
                 {
-                    SolucaoAnalisada.SolucaoObjetosCarregamento[i].Carregado = true;
-                    SolucaoAnalisada.SolucaoObjetosCarregamento[i].InicioX = Deslocamento;
-                    SolucaoAnalisada.SolucaoObjetosCarregamento[i].InicioY = AlturaMaxima;
-                    for (int j = Deslocamento; j < Deslocamento + Instancia.Objetos[i].Largura; j++)
+                    SolucaoAnalisada.SolucaoObjetosCarregamento[IndiceObjetoAtual].Carregado = true;
+                    SolucaoAnalisada.SolucaoObjetosCarregamento[IndiceObjetoAtual].InicioX = Deslocamento;
+                    SolucaoAnalisada.SolucaoObjetosCarregamento[IndiceObjetoAtual].InicioY = AlturaMaxima;
+                    for (int j = Deslocamento; j < Deslocamento + Instancia.Objetos[IndiceObjetoAtual].Largura; j++)
                     {
                         SolucaoAnalisada.Alturas[j] = NovaAltura;
                     }
-                    SolucaoAnalisada.AreaUtilizada += Instancia.Objetos[i].Altura * Instancia.Objetos[i].Largura;
+                    SolucaoAnalisada.AreaUtilizada += Instancia.Objetos[IndiceObjetoAtual].Altura * Instancia.Objetos[IndiceObjetoAtual].Largura;
                 }
                 else
                 {
-                    SolucaoAnalisada.SolucaoObjetosCarregamento[i].Carregado = false;
+                    SolucaoAnalisada.SolucaoObjetosCarregamento[IndiceObjetoAtual].Carregado = false;
                 }
             }
             return SolucaoAnalisada;

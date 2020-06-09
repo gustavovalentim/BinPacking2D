@@ -26,9 +26,9 @@ namespace BinPacking2D
             int[] SequenciaTeste = new int[MeuProblema.Instancia.QuantidadeObjetosParaCarregar];
             for(int i=0;i<MeuProblema.Instancia.QuantidadeObjetosParaCarregar;i++)
             {
-                SequenciaTeste[i] = i;
+                SequenciaTeste[i] = MeuProblema.Instancia.QuantidadeObjetosParaCarregar - i -1;
             }
-            MeuProblema.Solucao = MeuProblema.MetodoBaixoDireita(SequenciaTeste);
+            MeuProblema.Solucao = MeuProblema.MetodoSimulatedAnnealing(SequenciaTeste, 100);
             MeuProblema.Desenhar();
             pictureBox1.Image = MeuProblema.Desenho;
         }
