@@ -1,0 +1,10 @@
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\bin\Debug\BinPacking2D.exe.config
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\bin\Debug\BinPacking2D.exe
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\bin\Debug\BinPacking2D.pdb
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.csprojAssemblyReference.cache
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.Form1.resources
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.Properties.Resources.resources
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.csproj.GenerateResource.cache
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.csproj.CoreCompileInputs.cache
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.exe
+C:\Users\gusta\source\repos\BinPacking2D\BinPacking2D\obj\Debug\BinPacking2D.pdb
